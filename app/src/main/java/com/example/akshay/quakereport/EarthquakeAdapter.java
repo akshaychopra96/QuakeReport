@@ -2,8 +2,10 @@ package com.example.akshay.quakereport;
 
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ public EarthquakeAdapter(Context c, ArrayList<Earthquake> earthquake){
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
     Earthquake e = getItem(position);
+    String loc1="",loc2="";
 
     if(convertView == null)
         convertView= LayoutInflater.from(getContext()).inflate(R.layout.earthquake_list_item, parent,false);
@@ -66,16 +69,35 @@ public EarthquakeAdapter(Context c, ArrayList<Earthquake> earthquake){
 
         Log.e("tag",originalLocation);
 
-        String array[] = originalLocation.split("of ");
-        String loc1 = array[0];
-        String loc2 = array[1]; // this is the 68 line
+        if(originalLocation.contains("of")) {
+
+            String array[] = originalLocation.split("of ");
+             loc1 = array[0];
+             loc2 = array[1]; // this is the 68 line
+        }
+
+        else{
+            loc1 = originalLocation;
+        }
+
 //Log.e("tag","length: "+array.length);
-        Log.e("tag","loc1 is "+loc1);
-       Log.e("tag","loc2 is "+loc2);
+//        Log.e("tag","loc1 is "+loc1);
+//       Log.e("tag","loc2 is "+loc2);
 
         double magnitude = e.getMagnitude();
         DecimalFormat df = new DecimalFormat("0.0");
         String truncatedMag = df.format(magnitude);
+
+
+        // Set the proper background color on the magnitude circle.
+        // Fetch the background from the TextView, which is a GradientDrawable.
+        GradientDrawable magnitudeCircle = (GradientDrawable) mag.getBackground();
+
+        // Get the appropriate background color based on the current earthquake magnitude
+        int magnitudeColor = getMagnitudeColor(e.getMagnitude());
+
+        // Set the color on the magnitude circle
+        magnitudeCircle.setColor(magnitudeColor);
 
         time.setText(formatTime);
         date.setText(formatDate);
@@ -87,4 +109,56 @@ public EarthquakeAdapter(Context c, ArrayList<Earthquake> earthquake){
 
         return convertView;
     }
+
+    private int getMagnitudeColor(double magnitude){
+
+    int floorMagnitude = (int) Math.floor(magnitude);
+    int colorId;
+
+    switch (floorMagnitude){
+
+        case 1:
+            colorId = R.color.magnitude1;
+            break;
+
+        case 2:
+            colorId = R.color.magnitude2;
+            break;
+        case 3:
+            colorId = R.color.magnitude3;
+            break;
+
+        case 4:
+            colorId = R.color.magnitude4;
+            break;
+        case 5:
+            colorId = R.color.magnitude5;
+            break;
+
+        case 6:
+            colorId = R.color.magnitude6;
+            break;
+        case 7:
+            colorId = R.color.magnitude7;
+            break;
+
+        case 8:
+            colorId = R.color.magnitude8;
+            break;
+        case 9:
+            colorId = R.color.magnitude9;
+            break;
+
+        case 10:
+            colorId = R.color.magnitude10plus;
+            break;
+
+            default:
+                colorId = R.color.magnitude10plus;
+
+
+    }
+        return ContextCompat.getColor(getContext(), colorId);
+    }
+
 }
